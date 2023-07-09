@@ -12,6 +12,7 @@ function getNews() {
       news.map((item) => {
         newsId = item.newsId;
         userId = item.UserId;
+        newsLikedCount = item.newsLikedCount;
         img = item.img;
         if (item.title.length > 30) {
           title = item.title.substring(0, 31) + ' ...';
@@ -26,18 +27,65 @@ function getNews() {
                               <div class="news-card">
                                 <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
                                 <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
-                                <p>${createdAt}</p>
+                                <p>${createdAt.split("T")[0]}</p>
                                 <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
+                                <p>좋아요 : ${newsLikedCount}</p>
                               </div>
                             </li>
                           </ul>`;
 
-        $('.news-category').html('축구소식');
+        $('.news-category').html('모든 기사');
         $('.news-box').append(template);
       });
     },
   });
 }
+
+// function getNews2(region, order) {
+//   const region = region;
+//   const order = order;
+//   $.ajax({
+//     type: 'GET',
+//     url: '/api/getnews',
+//     success: function (res) {
+//       const news = res.news;
+
+//       const newsList = news.filter((a) => {
+//         return a['category'] === region;
+//       });
+
+//       news.map((item) => {
+//         newsId = item.newsId;
+//         userId = item.UserId;
+//         newsLikedCount = item.newsLikedCount;
+//         img = item.img;
+//         if (item.title.length > 30) {
+//           title = item.title.substring(0, 31) + ' ...';
+//         } else {
+//           title = item.title;
+//         }
+//         createdAt = item.createdAt.substring(0, 10);
+//         user = item.User.nickname;
+
+//         const template = `<ul class="news-item">
+//                             <li class="news-list">
+//                               <div class="news-card">
+//                                 <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
+//                                 <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
+//                                 <p>${createdAt.split("T")[0]}</p>
+//                                 <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
+//                                 <p>좋아요 : ${newsLikedCount}</p>
+//                               </div>
+//                             </li>
+//                           </ul>`;
+
+//         $('.news-category').html('축구소식');
+//         $('.news-box').append(template);
+//       });
+//       $('.date-sort-btn').html(order);
+//     },
+//   });
+// }
 
 // 로그인 버튼
 function signIn() {
@@ -89,7 +137,7 @@ function loginCheck() {
         $('.user-form').html(template);
         $('.logout-btn').removeClass('blind');
         $('#signUpList').hide();
-        
+
         document.getElementById('writeA').onclick = '';
 
         loginUserNickname = userInfo.nickname;
@@ -101,6 +149,7 @@ function loginCheck() {
 
 // 국내축구 카테고리
 function kFootball() {
+  const category = '국내 축구 기사';
   $('.news-box').empty();
   $.ajax({
     type: 'GET',
@@ -110,38 +159,14 @@ function kFootball() {
       const newsList = news.filter((a) => {
         return a['category'] === '국내';
       });
-      newsList.filter((item) => {
-        newsId = item.newsId;
-        userId = item.UserId;
-        img = item.img;
-        if (item.title.length > 30) {
-          title = item.title.substring(0, 31) + ' ...';
-        } else {
-          title = item.title;
-        }
-        createdAt = item.createdAt.substring(0, 10);
-        user = item.User.nickname;
-
-        const template = `<ul class="news-item">
-                            <li class="news-list">
-                              <div class="news-card">
-                                <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
-                                <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
-                                <p>${createdAt}</p>
-                                <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
-                              </div>
-                            </li>
-                          </ul>`;
-
-        $('.news-category').html(`${item.category}축구`);
-        $('.news-box').append(template);
-      });
+      getFootball(newsList,category)
     },
   });
 }
 
 // 해외축구 카테고리
 function wFootball() {
+  const category = '해외 축구 기사';
   $('.news-box').empty();
   $.ajax({
     type: 'GET',
@@ -151,245 +176,299 @@ function wFootball() {
       const newsList = news.filter((a) => {
         return a['category'] === '해외';
       });
-      newsList.map((item) => {
-        newsId = item.newsId;
-        userId = item.UserId;
-        img = item.img;
-        if (item.title.length > 30) {
-          title = item.title.substring(0, 31) + ' ...';
-        } else {
-          title = item.title;
-        }
-        createdAt = item.createdAt.substring(0, 10);
-        user = item.User.nickname;
-
-        const template = `<ul class="news-item">
-                            <li class="news-list">
-                              <div class="news-card">
-                                <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
-                                <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
-                                <p>${createdAt}</p>
-                                <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
-                              </div>
-                            </li>
-                          </ul>`;
-
-        $('.news-category').html(`${item.category}축구`);
-        $('.news-box').append(template);
-      });
+      getFootball(newsList,category);
     },
   });
 }
 
-// 최신, 과거순 정렬 함수
-function dateSort() {
+// 전체축구 카테고리
+function aFootball() {
+  const category = '모든 기사';
   $('.news-box').empty();
-
-  // 정렬 버튼 텍스트
-  let sortBtnText = $('.date-sort-btn').html();
-  // 카테고리 텍스트
-  let category = $('.news-category').html();
-
-  // 과거순으로
-  if (sortBtnText === '최신순') {
-    if (category === '국내축구') {
-      $.ajax({
-        type: 'GET',
-        url: '/api/getoldnews',
-        success: function (res) {
-          const news = res.news;
-          const newsList = news.filter((a) => {
-            return a['category'] === '국내';
-          });
-          newsList.map((item) => {
-            newsId = item.newsId;
-            userId = item.UserId;
-            img = item.img;
-            if (item.title.length > 30) {
-              title = item.title.substring(0, 31) + ' ...';
-            } else {
-              title = item.title;
-            }
-            createdAt = item.createdAt.substring(0, 10);
-            user = item.User.nickname;
-
-            const template = `<ul class="news-item">
-                            <li class="news-list">
-                              <div class="news-card">
-                                <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
-                                <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
-                                <p>${createdAt}</p>
-                                <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
-                              </div>
-                            </li>
-                          </ul>`;
-
-            $('.news-category').html(`${item.category}축구`);
-            $('.news-box').append(template);
-          });
-          $('.date-sort-btn').html('과거순');
-        },
+  $.ajax({
+    type: 'GET',
+    url: '/api/getnews',
+    success: function (res) {
+      const news = res.news;
+      const newsList = news.filter((a) => {
+        return a['category'] === '해외' || a['category'] === '국내';
       });
-    } else if (category === '해외축구') {
-      $.ajax({
-        type: 'GET',
-        url: '/api/getoldnews',
-        success: function (res) {
-          const news = res.news;
-          const newsList = news.filter((a) => {
-            return a['category'] === '해외';
-          });
-          newsList.map((item) => {
-            newsId = item.newsId;
-            userId = item.UserId;
-            img = item.img;
-            if (item.title.length > 30) {
-              title = item.title.substring(0, 31) + ' ...';
-            } else {
-              title = item.title;
-            }
-            createdAt = item.createdAt.substring(0, 10);
-            user = item.User.nickname;
 
-            const template = `<ul class="news-item">
-                            <li class="news-list">
-                              <div class="news-card">
-                                <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
-                                <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
-                                <p>${createdAt}</p>
-                                <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
-                              </div>
-                            </li>
-                          </ul>`;
-
-            $('.news-category').html(`${item.category}축구`);
-            $('.news-box').append(template);
-          });
-          $('.date-sort-btn').html('과거순');
-        },
-      });
-    } else {
-      $.ajax({
-        type: 'GET',
-        url: '/api/getoldnews',
-        success: function (res) {
-          const news = res.news;
-          news.map((item) => {
-            newsId = item.newsId;
-            userId = item.UserId;
-            img = item.img;
-            if (item.title.length > 30) {
-              title = item.title.substring(0, 31) + ' ...';
-            } else {
-              title = item.title;
-            }
-            createdAt = item.createdAt.substring(0, 10);
-            user = item.User.nickname;
-
-            const template = `<ul class="news-item">
-                            <li class="news-list">
-                              <div class="news-card">
-                                <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
-                                <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
-                                <p>${createdAt}</p>
-                                <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
-                              </div>
-                            </li>
-                          </ul>`;
-
-            $('.news-category').html(`축구소식`);
-            $('.news-box').append(template);
-          });
-          $('.date-sort-btn').html('과거순');
-        },
-      });
-    }
-  }
-  // 최신순으로
-  else if (sortBtnText === '과거순') {
-    if (category === '국내축구') {
-      $.ajax({
-        type: 'GET',
-        url: '/api/getnews',
-        success: function (res) {
-          const news = res.news;
-          const newsList = news.filter((a) => {
-            return a['category'] === '국내';
-          });
-          newsList.map((item) => {
-            newsId = item.newsId;
-            userId = item.UserId;
-            img = item.img;
-            if (item.title.length > 30) {
-              title = item.title.substring(0, 31) + ' ...';
-            } else {
-              title = item.title;
-            }
-            createdAt = item.createdAt.substring(0, 10);
-            user = item.User.nickname;
-
-            const template = `<ul class="news-item">
-                            <li class="news-list">
-                              <div class="news-card">
-                                <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
-                                <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
-                                <p>${createdAt}</p>
-                                <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
-                              </div>
-                            </li>
-                          </ul>`;
-
-            $('.news-category').html(`${item.category}축구`);
-            $('.news-box').append(template);
-          });
-          $('.date-sort-btn').html('최신순');
-        },
-      });
-    } else if (category === '해외축구') {
-      $.ajax({
-        type: 'GET',
-        url: '/api/getnews',
-        success: function (res) {
-          const news = res.news;
-          const newsList = news.filter((a) => {
-            return a['category'] === '해외';
-          });
-          newsList.map((item) => {
-            newsId = item.newsId;
-            userId = item.UserId;
-            img = item.img;
-            if (item.title.length > 30) {
-              title = item.title.substring(0, 31) + ' ...';
-            } else {
-              title = item.title;
-            }
-            createdAt = item.createdAt.substring(0, 10);
-            user = item.User.nickname;
-
-            const template = `<ul class="news-item">
-                            <li class="news-list">
-                              <div class="news-card">
-                                <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
-                                <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
-                                <p>${createdAt}</p>
-                                <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
-                              </div>
-                            </li>
-                          </ul>`;
-
-            $('.news-category').html(`${item.category}축구`);
-            $('.news-box').append(template);
-          });
-          $('.date-sort-btn').html('최신순');
-        },
-      });
-    } else {
-      getNews();
-      $('.date-sort-btn').html('최신순');
-    }
-  }
+      getFootball(newsList,category);
+    },
+  });
 }
 
+// 좋아요 카테고리
+function lFootball(userId) {
+  const category = '내가 좋아요 한 기사';
+  console.log(userId)
+  $('.news-box').empty();
+  $.ajax({
+    type: 'GET',
+    url: '/api/getnewsLiked',
+    data: { userId: userId },
+    success: function (res) {
+      const news = res.news;
+      getFootball(news,category)
+    },
+  });
+}
+
+function getFootball(newsList, category) {
+  // console.log(category);
+  newsList.map((item) => {
+    newsId = item.newsId;
+    userId = item.UserId;
+    newsLikedCount = item.newsLikedCount;
+    img = item.img;
+    if (item.title.length > 30) {
+      title = item.title.substring(0, 31) + ' ...';
+    } else {
+      title = item.title;
+    }
+    createdAt = item.createdAt.substring(0, 10);
+    user = item.User.nickname;
+
+    const template = `<ul class="news-item">
+                            <li class="news-list">
+                              <div class="news-card">
+                                <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
+                                <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
+                                <p>${createdAt.split("T")[0]}</p>
+                                <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
+                                <p>좋아요 : ${newsLikedCount}</p>
+                              </div>
+                            </li>
+                          </ul>`;
+
+    $('.news-category').html(category);
+    $('.news-box').append(template);
+  });
+}
+
+// 최신, 과거순 정렬 함수
+// function dateSort() {
+//   $('.news-box').empty();
+
+//   // 정렬 버튼 텍스트
+//   let sortBtnText = $('.date-sort-btn').html();
+//   // 카테고리 텍스트
+//   let category = $('.news-category').html();
+
+//   // 과거순으로
+//   if (sortBtnText === '최신순') {
+//     if (category === '국내축구') {
+//       $.ajax({
+//         type: 'GET',
+//         url: '/api/getoldnews',
+//         success: function (res) {
+//           const news = res.news;
+
+//           const newsList = news.filter((a) => {
+//             return a['category'] === '국내';
+//           });
+
+//           newsList.map((item) => {
+//             newsId = item.newsId;
+//             userId = item.UserId;
+//             newsLikedCount = item.newsLikedCount;
+//             img = item.img;
+//             if (item.title.length > 30) {
+//               title = item.title.substring(0, 31) + ' ...';
+//             } else {
+//               title = item.title;
+//             }
+//             createdAt = item.createdAt.substring(0, 10);
+//             user = item.User.nickname;
+
+//             const template = `<ul class="news-item">
+//                             <li class="news-list">
+//                               <div class="news-card">
+//                                 <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
+//                                 <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
+//                                 <p>${createdAt.split("T")[0]}</p>
+//                                 <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
+//                                 <p>좋아요 : ${newsLikedCount}</p>
+//                               </div>
+//                             </li>
+//                           </ul>`;
+
+//             $('.news-category').html(`국내 축구`);
+//             $('.news-box').append(template);
+//           });
+//           $('.date-sort-btn').html('과거순');
+//         },
+//       });
+//     } else if (category === '해외축구') {
+//       $.ajax({
+//         type: 'GET',
+//         url: '/api/getoldnews',
+//         success: function (res) {
+//           const news = res.news;
+//           const newsList = news.filter((a) => {
+//             return a['category'] === '해외';
+//           });
+//           newsList.map((item) => {
+//             newsId = item.newsId;
+//             userId = item.UserId;
+//             newsLikedCount = item.newsLikedCount;
+//             img = item.img;
+//             if (item.title.length > 30) {
+//               title = item.title.substring(0, 31) + ' ...';
+//             } else {
+//               title = item.title;
+//             }
+//             createdAt = item.createdAt.substring(0, 10);
+//             user = item.User.nickname;
+
+//             const template = `<ul class="news-item">
+//                             <li class="news-list">
+//                               <div class="news-card">
+//                                 <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
+//                                 <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
+//                                 <p>${createdAt.split("T")[0]}</p>
+//                                 <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
+//                                 <p>좋아요 : ${newsLikedCount}</p>
+//                               </div>
+//                             </li>
+//                           </ul>`;
+
+//             $('.news-category').html(`${item.category}축구`);
+//             $('.news-box').append(template);
+//           });
+//           $('.date-sort-btn').html('과거순');
+//         },
+//       });
+//     } else {
+//       $.ajax({
+//         type: 'GET',
+//         url: '/api/getoldnews',
+//         success: function (res) {
+//           const news = res.news;
+//           news.map((item) => {
+//             newsId = item.newsId;
+//             userId = item.UserId;
+//             newsLikedCount = item.newsLikedCount;
+//             img = item.img;
+//             if (item.title.length > 30) {
+//               title = item.title.substring(0, 31) + ' ...';
+//             } else {
+//               title = item.title;
+//             }
+//             createdAt = item.createdAt.substring(0, 10);
+//             user = item.User.nickname;
+
+//             const template = `<ul class="news-item">
+//                             <li class="news-list">
+//                               <div class="news-card">
+//                                 <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
+//                                 <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
+//                                 <p>${createdAt.split("T")[0]}</p>
+//                                 <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
+//                                 <p>좋아요 : ${newsLikedCount}</p>
+//                               </div>
+//                             </li>
+//                           </ul>`;
+
+//             $('.news-category').html(`국내 축구, 이전순`);
+//             $('.news-box').append(template);
+//           });
+//           $('.date-sort-btn').html('과거순');
+//         },
+//       });
+//     }
+//   }
+//   // 최신순으로
+//   else if (sortBtnText === '과거순') {
+//     if (category === '국내축구') {
+//       $.ajax({
+//         type: 'GET',
+//         url: '/api/getnews',
+//         success: function (res) {
+//           const news = res.news;
+//           const newsList = news.filter((a) => {
+//             return a['category'] === '국내';
+//           });
+//           newsList.map((item) => {
+//             newsId = item.newsId;
+//             userId = item.UserId;
+//             newsLikedCount = item.newsLikedCount;
+//             img = item.img;
+//             if (item.title.length > 30) {
+//               title = item.title.substring(0, 31) + ' ...';
+//             } else {
+//               title = item.title;
+//             }
+//             createdAt = item.createdAt.substring(0, 10);
+//             user = item.User.nickname;
+
+//             const template = `<ul class="news-item">
+//                             <li class="news-list">
+//                               <div class="news-card">
+//                                 <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
+//                                 <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
+//                                 <p>${createdAt.split("T")[0]}</p>
+//                                 <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
+//                                 <p>좋아요 : ${newsLikedCount}</p>
+//                               </div>
+//                             </li>
+//                           </ul>`;
+
+//             $('.news-category').html(`${item.category}축구`);
+//             $('.news-box').append(template);
+//           });
+//           $('.date-sort-btn').html('최신순');
+//         },
+//       });
+//     } else if (category === '해외축구') {
+//       $.ajax({
+//         type: 'GET',
+//         url: '/api/getnews',
+//         success: function (res) {
+//           const news = res.news;
+//           const newsList = news.filter((a) => {
+//             return a['category'] === '해외';
+//           });
+//           newsList.map((item) => {
+//             newsId = item.newsId;
+//             userId = item.UserId;
+//             newsLikedCount = item.newsLikedCount;
+//             img = item.img;
+//             if (item.title.length > 30) {
+//               title = item.title.substring(0, 31) + ' ...';
+//             } else {
+//               title = item.title;
+//             }
+//             createdAt = item.createdAt.substring(0, 10);
+//             user = item.User.nickname;
+
+//             const template = `<ul class="news-item">
+//                             <li class="news-list">
+//                               <div class="news-card">
+//                                 <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
+//                                 <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
+//                                 <p>${createdAt.split("T")[0]}</p>
+//                                 <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
+//                                 <p>좋아요 : ${newsLikedCount}</p>
+//                               </div>
+//                             </li>
+//                           </ul>`;
+
+//             $('.news-category').html(`${item.category}축구`);
+//             $('.news-box').append(template);
+//           });
+//           $('.date-sort-btn').html('최신순');
+//         },
+//       });
+//     } else {
+//       getNews();
+//       $('.date-sort-btn').html('최신순');
+//     }
+//   }
+// }
+
+//  뉴스 상세보기
 function getNewsDetail(goodsId, callback) {
   $.ajax({
     type: 'GET',
@@ -408,6 +487,7 @@ function getNewsDetail(goodsId, callback) {
     },
   });
 }
+
 
 function getNewsDetailLiked(newsId, callback) {
   $.ajax({
@@ -499,17 +579,17 @@ function clickDeleteBtn(newsId) {
 
 //댓글 작성
 function addComment(newsId) {
-  if(!loginUserId){
+  if (!loginUserId) {
     alert('로그인 댓글을 남길 수 있습니다.');
-    return ;
+    return;
   }
 
   const content = document.querySelector("#commentContent").value;
-  if(content){
+  if (content) {
     $.ajax({
       type: 'POST',
       url: `/api/news/${newsId}/comments`,
-      data: {content:content},
+      data: { content: content },
       success: function (res) {
         getComments(newsId);
         document.querySelector("#commentContent").value = "";
@@ -519,19 +599,19 @@ function addComment(newsId) {
         alert('댓글 작성에 실패했습니다.');
       },
     });
-  }else{
+  } else {
     alert("내용을 입력해주세요");
   }
 }
 
 // 댓글 수정 기능
 function editComment(newsId, commentId, beforeContent) {
-  const content = prompt("수정할 내용을 입력해주세요.",beforeContent);
-  if(content){
+  const content = prompt("수정할 내용을 입력해주세요.", beforeContent);
+  if (content) {
     $.ajax({
       type: 'PUT',
       url: `/api/news/${newsId}/comments/${commentId}`,
-      data: {content:content},
+      data: { content: content },
       success: function () {
         getComments(newsId);
         document.querySelector("#commentContent").value = "";
@@ -540,7 +620,7 @@ function editComment(newsId, commentId, beforeContent) {
         alert('댓글 수정에 실패했습니다.');
       }
     });
-  }else{
+  } else {
     alert("내용을 입력해주세요");
   }
 }
@@ -548,9 +628,9 @@ function editComment(newsId, commentId, beforeContent) {
 // 댓글 삭제 기능
 function deleteComment(newsId, commentId) {
   if (confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
-      $.ajax({
-        type: 'DELETE',
-        url: `/api/news/${newsId}/comments/${commentId}`,
+    $.ajax({
+      type: 'DELETE',
+      url: `/api/news/${newsId}/comments/${commentId}`,
       success: function (res) {
         getComments(newsId);
       },
@@ -563,13 +643,13 @@ function deleteComment(newsId, commentId) {
 
 // 댓글 신고 기능
 function declarateComment(newsId, commentId) {
-  if(loginUserId){
+  if (loginUserId) {
     const content = prompt("신고사유를 작성해주세요.");
-    if(content){
+    if (content) {
       $.ajax({
         type: 'POST',
         url: `/api/news/${newsId}/comments/${commentId}/declaration`,
-        data: {content:content},
+        data: { content: content },
         success: function () {
           alert('댓글을 신고했습니다.');
           declarationProccess(newsId, commentId);
@@ -578,15 +658,15 @@ function declarateComment(newsId, commentId) {
           alert('댓글 신고에 실패하였습니다.');
         }
       });
-    }else{
+    } else {
       alert("내용을 입력해주세요");
     }
-  }else{
+  } else {
     alert("로그인 후 이용 가능합니다.");
   }
 }
 
-function getComments(newsId){
+function getComments(newsId) {
   $.ajax({
     type: 'GET',
     url: `/api/news/${newsId}/comments`,
@@ -597,7 +677,7 @@ function getComments(newsId){
       let commentsContainer = $('#comments');
       commentsContainer.empty();
       const comments = response.comments;
-      for(let i = 0; i < comments.length; i++){
+      for (let i = 0; i < comments.length; i++) {
         let commentElement = createCommentElement(newsId, comments[i]);
         commentsContainer.append(commentElement);
       }
@@ -605,12 +685,12 @@ function getComments(newsId){
   });
 }
 
-function declarationProccess(newsId, commentId){
+function declarationProccess(newsId, commentId) {
   $.ajax({
     type: 'DELETE',
     url: `/api/news/comments/${commentId}/declaration`,
     success: function (response) {
-      if(response.check === "OK") getComments(newsId);
+      if (response.check === "OK") getComments(newsId);
     }
   });
 }
@@ -618,33 +698,33 @@ function declarationProccess(newsId, commentId){
 function createCommentElement(newsId, comment) {
   console.log("dd");
   let commentElement = $('<div>').addClass('comment');
-  let contentElement = $('<span>').addClass('commentContent').text(": "+comment.content);
+  let contentElement = $('<span>').addClass('commentContent').text(": " + comment.content);
   let actionsElement = $('<span>').addClass('actions');
 
   // 닉네임을 표시하는 요소 생성
   let nicknameElement = $('<span>').addClass('commentNickname').text(comment.nickname);
   // 클릭 이벤트 핸들러 추가
-  nicknameElement.on('click', function() {
+  nicknameElement.on('click', function () {
     // 네비게이션 코드를 여기에 추가
     window.location.href = '/userinfo.html?userId=' + comment.userId;
   });
 
-  if(loginUserId === comment.userId){
+  if (loginUserId === comment.userId) {
     let editButton = $('<button>').text('수정');
-    editButton.on('click', function() {
+    editButton.on('click', function () {
       editComment(newsId, comment.commentsId, comment.content);
     });
 
     let deleteButton = $('<button>').text('삭제');
-    deleteButton.on('click', function() {
+    deleteButton.on('click', function () {
       deleteComment(newsId, comment.commentsId);
     });
-  
+
     actionsElement.append(editButton, deleteButton);
   }
 
   let declarateButton = $('<button>').text('신고');
-  declarateButton.on('click', function() {
+  declarateButton.on('click', function () {
     declarateComment(newsId, comment.commentsId);
   });
 
@@ -664,17 +744,17 @@ function editPost(newsId) {
   const categoryRadio = document.getElementsByName('category');
   let category;
   categoryRadio.forEach((node) => {
-    if(node.checked)  {
+    if (node.checked) {
       category = node.value;
     }
-  }) 
+  })
 
   // const content = prompt("수정할 내용을 입력해주세요.",beforeContent);
-  if(title && content && category){
+  if (title && content && category) {
     $.ajax({
       type: 'PUT',
       url: `/api/news/${newsId}`,
-      data: {title, content, category},
+      data: { title, content, category },
       success: function () {
         alert('뉴스 수정에 성공했습니다.');
       },
@@ -683,7 +763,7 @@ function editPost(newsId) {
       }
     });
     location.href = "http://localhost:3018/newsDetail.html?newsId=" + newsId;
-  }else{
+  } else {
     alert("내용을 입력해주세요");
   }
 }

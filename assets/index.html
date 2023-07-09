@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="./css/main.css" />
   <link rel="favicon" href="./img/favicon.ico" />
   <link href="https://fonts.googleapis.com/css2?family=Gugi&display=swap" rel="stylesheet" />
+  <script src="/jwt-decode.js"></script>
   <title>축스피드</title>
 </head>
 
@@ -42,9 +43,20 @@
   <div class="main-container">
     <main>
       <div class="btn-box">
-        <a onclick="kFootball()">국내축구</a>
-        <a onclick="wFootball()">해외축구</a>
-        <a class="date-sort-btn" onclick="dateSort()">최신순</a>
+        <div>
+          <div>
+            <a onclick="aFootball()">전체기사</a>
+            <a id="userIdElement">좋아요</a>
+            <br>
+          </div>
+          <div>
+            <a onclick="kFootball()">국내축구</a>
+            <a onclick="wFootball()">해외축구</a>
+          </div>
+        </div>
+
+
+        <!-- <a class="date-sort-btn" onclick="dateSort()">최신순</a> -->
       </div>
       <!-- 카테고리 표시 -->
       <p class="news-category">축구소식</p>
@@ -64,6 +76,37 @@
       getNews();
       loginCheck();
     });
+
+    function getUserInfo() {
+      console.log("자동 실행됨");
+      // 쿠키 가져오기
+      const cookie = document.cookie;
+
+      console.log("쿠키값 : " + cookie);
+
+      // 쿠키확인
+      const matches = cookie.match(/Bearer%20(.+)/);
+      if (matches && matches[1]) {
+        console.log("쿠키해독시작")
+        const token = decodeURIComponent(matches[1]);
+        const decodedToken = jwt_decode(token);
+        //  전역 변수로하면 함수에 넣을 때 처음 로그인 하고 누른 값으로 고정된다.
+        // 또 누르면 그 값 +1 이된다. 새로고침하면 다시 처음부터
+        const userId = decodedToken.userId;
+        console.log("토큰 값", userId);
+
+        userIdElement.addEventListener("click", function () {
+          lFootball(userId); // 클릭 이벤트 발생 시 lFootball 함수 호출하여 userId 전달
+        });
+      }
+    }
+
+    window.onload = function () {
+
+      getUserInfo(); // getUserInfo() 함수 호출
+    }
+
+
   </script>
 </body>
 

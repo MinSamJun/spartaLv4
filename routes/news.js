@@ -23,6 +23,10 @@ router.get("/news/:newsId", async (req, res) => {
         ],
         where: { newsId }
     });
+    
+    // console.log("뉴스시작")
+    // console.log(news.img.toString('utf8'))
+    // console.log("뉴스끝")
 
     const prNews = [news].map((item) => {
         return {
@@ -32,11 +36,15 @@ router.get("/news/:newsId", async (req, res) => {
             nickname: item.User.nickname,
             content: item.content,
             category: item.category,
-            img: item.img,
+            img: item.img.toString('utf8'),
             createdAt: item.createdAt,
             updatedAt: item.updatedAt,
         };
     });
+
+    // console.log("확인")
+    // console.log(typeof prNews.img, prNews.img);
+    // console.log(typeof item.img, item.img);
     
     res.json({
         news: prNews,
@@ -115,5 +123,7 @@ router.delete("/like/:newsId", authMiddleware, async (req, res) => {
     });
   }
 });
+
+
 
 module.exports = router;

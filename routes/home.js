@@ -1,6 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const { Users, News } = require("../models");
+const { Users, News, NewsLiked } = require("../models");
 const authMiddleware = require("../middlewares/auth-middleware");
 const { json, useInflection } = require("sequelize");
 const router = express.Router();
@@ -43,30 +43,17 @@ router.post("/api/logout", authMiddleware, async (req, res) => {
 
 // 뉴스 불러오기 API (최신순)
 router.get("/api/getnews", async (req, res) => {
-  const newsList = await News.findAll({
-    attributes: [
-      "newsId",
-      "UserId",
-      "title",
-      "content",
-      "img",
-      "category",
-      "createdAt",
-      "updatedAt",
-    ],
-    include: [
-      {
-        model: Users,
-        attributes: ["nickname"],
-      },
-    ],
-    order: [["createdAt", "DESC"]],
-  });
-  res.status(200).json({ news: newsList });
+  const desc = "desc";
+  newsCall(desc, res)
 });
 
 // 뉴스 불러오기 API (과거순)
 router.get("/api/getoldnews", async (req, res) => {
+  const asc = "asc";
+  newsCall(asc, res)
+});
+
+async function newsCall(order, res) {
   const newsList = await News.findAll({
     attributes: [
       "newsId",
@@ -83,10 +70,113 @@ router.get("/api/getoldnews", async (req, res) => {
         model: Users,
         attributes: ["nickname"],
       },
+      {
+        model: NewsLiked,
+        attributes: [],
+      },
     ],
-    order: [["createdAt", "ASC"]],
+    order: [["createdAt", order]],
   });
-  res.status(200).json({ news: newsList });
+
+  console.log(newsList)
+
+  // 각 뉴스의 newsId 값을 가져와서 NewsLikeds에서 해당 newsId 값을 가진 데이터 개수를 세기
+  for (const news of newsList) {
+    const count = await NewsLiked.count({
+      where: {
+        newsId: news.newsId,
+      },
+    });
+    news.dataValues.newsLikedCount = count;
+  }
+
+  // 중복 제거 코드 추가
+  const uniqueNewsList = newsList.filter((news, index, self) =>
+    self.findIndex((item) => item.newsId === news.newsId) === index
+  );
+
+  const newsWithLikes = uniqueNewsList.map((news) => {
+    // console.log(news.dataValues.newsId, news.dataValues.newsLikedCount);
+    return {
+      ...news.dataValues,
+      newsLikedCount: news.dataValues.newsLikedCount,
+    };
+  });
+
+  res.status(200).json({ news: newsWithLikes });
+};
+
+
+//  좋아요로 찾아오기
+router.get("/api/getnewsLiked", async (req, res) => {
+  console.log("좋아요 찾기 시작");
+
+  const { userId } = req.query; // userId 값을 쿼리 파라미터로부터 가져옴
+  console.log("userId", typeof userId, userId);
+
+  const newsLikedList = await NewsLiked.findAll({
+    attributes: ["newsId"],
+    order: [["createdAt", "ASC"]],
+    where: { userId: userId } // userId를 사용하여 where 절을 구성
+  });
+
+  // newsId만 추출하여 배열로 저장
+  const newsIds = newsLikedList.map((item) => item.newsId);
+
+  const newsList = await News.findAll({
+    attributes: [
+      "newsId",
+      "UserId",
+      "title",
+      "content",
+      "img",
+      "category",
+      "createdAt",
+      "updatedAt",
+    ],
+    include: [
+      {
+        model: Users,
+        attributes: ["nickname"],
+      },
+      {
+        model: NewsLiked,
+        attributes: [],
+      },
+    ],
+    where: { newsId: newsIds }
+  });
+
+  // 중복 제거 코드 추가
+  const uniqueNewsList = newsList.filter((news, index, self) =>
+    self.findIndex((item) => item.newsId === news.newsId) === index
+  );
+
+  // 각 뉴스의 newsId 값을 가져와서 NewsLikeds에서 해당 newsId 값을 가진 데이터 개수를 세기
+  for (const news of uniqueNewsList) {
+    const count = await NewsLiked.count({
+      where: {
+        newsId: news.newsId,
+      },
+    });
+    news.dataValues.newsLikedCount = count;
+  }
+
+  const newsWithLikes = uniqueNewsList.map((news) => {
+    return {
+      ...news.dataValues,
+      newsLikedCount: news.dataValues.newsLikedCount,
+    };
+  });
+
+
+  const newsWithLikesSorted = newsWithLikes.sort((a, b) => {
+    return b.newsLikedCount - a.newsLikedCount;
+  });
+
+  res.status(200).json({ news: newsWithLikesSorted });
 });
+
+
 
 module.exports = router;
