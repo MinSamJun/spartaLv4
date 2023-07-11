@@ -26,6 +26,10 @@
 
 //아래 코드로 교체
 
+require('dotenv').config()
+let awsaki = process.env.awsaki
+let awssak = process.env.awssak
+
 const multer = require('multer');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const multerS3 = require('multer-s3');
@@ -34,8 +38,8 @@ const path = require('path');
 const s3Client = new S3Client({
   region: 'ap-northeast-2',
   credentials: {
-    accessKeyId: 'AKIAXCG7OCDHVBLCW5US',
-    secretAccessKey: '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',
+    accessKeyId: awsaki,
+    secretAccessKey: awssak,
   },
 });
 
