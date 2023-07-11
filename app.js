@@ -7,6 +7,8 @@ const userInfoeRouter = require("./routes/userInfo.js");
 const newspostRouter = require("./routes/newspost.js");
 const commentRouter = require("./routes/comment.js");
 
+//환경변수가 추가됨
+
 const app = express();
 const port = 3018;
 
