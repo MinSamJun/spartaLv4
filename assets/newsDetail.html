@@ -33,29 +33,30 @@
     <header>
         <nav>
             <div class="nav-item">
-              <h1 class="logo">
-                <a href="/"><img src="./img/logo.png" width="40" alt="logo" />축스피드</a>
-              </h1>
+                <h1 class="logo">
+                    <a href="/"><img src="./img/logo.png" width="40" alt="logo" />축스피드</a>
+                </h1>
             </div>
             <div class="nav-item">
-              <ul class="menu">
-                <li><a id="writeA" href="/create.html" onclick="alert('로그인 후 이용 가능합니다.');return false;">Write</a>
-                </li>
-                <li id="signUpList"><a href="/userCreate.html">SignUp</a></li>
-              </ul>
+                <ul class="menu">
+                    <li><a id="writeA" href="/create.html" onclick="alert('로그인 후 이용 가능합니다.');return false;">Write</a>
+                    </li>
+                    <li id="signUpList"><a href="/userCreate.html">SignUp</a></li>
+                </ul>
             </div>
             <div class="nav-item user-form">
-              <div class="login-form">
-                <input id="id" type="text" placeholder="ID 입력" onKeyPress="if (event.keyCode==13){signIn();}" />
-                <input id="password" type="password" placeholder="PW 입력" onKeyPress="if(event.keyCode==13){signIn();}" />
-                <button onclick="signIn()">로그인</button>
-              </div>
-              <!-- login user template -->
+                <div class="login-form">
+                    <input id="id" type="text" placeholder="ID 입력" onKeyPress="if (event.keyCode==13){signIn();}" />
+                    <input id="password" type="password" placeholder="PW 입력"
+                        onKeyPress="if(event.keyCode==13){signIn();}" />
+                    <button onclick="signIn()">로그인</button>
+                </div>
+                <!-- login user template -->
             </div>
             <div class="nav-item logout-btn blind">
-              <button onclick="logOut()">로그아웃</button>
+                <button onclick="logOut()">로그아웃</button>
             </div>
-          </nav>
+        </nav>
     </header>
 
     <!-- 뉴스 -->
@@ -64,11 +65,11 @@
         </div>
         <h1 id="newsTitle"></h1>
         <div>
-        <p id="newsCreatedAt"></p>
-        <p id="newsUpdatedAt"></p>
-        <p id="newsCreatedAt"></p>
-        <p id="newsUpdatedAt"></p>
-        <br>
+            <p id="newsCreatedAt"></p>
+            <p id="newsUpdatedAt"></p>
+            <p id="newsCreatedAt"></p>
+            <p id="newsUpdatedAt"></p>
+            <br>
         </div>
         <div id="newsNicknameDiv">
             <a id="newsNickname"></a>
@@ -125,6 +126,6 @@
             })
         });
     </script>
-    
+
 
 </html>

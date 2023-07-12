@@ -9,7 +9,7 @@ function getNews() {
     url: '/api/getnews',
     success: function (res) {
       const news = res.news;
-      news.map((item) => {
+      news.map(item => {
         newsId = item.newsId;
         userId = item.UserId;
         newsLikedCount = item.newsLikedCount;
@@ -27,7 +27,7 @@ function getNews() {
                               <div class="news-card">
                                 <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
                                 <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
-                                <p>${createdAt.split("T")[0]}</p>
+                                <p>${createdAt.split('T')[0]}</p>
                                 <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
                                 <p>좋아요 : ${newsLikedCount}</p>
                               </div>
@@ -156,10 +156,10 @@ function kFootball() {
     url: '/api/getnews',
     success: function (res) {
       const news = res.news;
-      const newsList = news.filter((a) => {
+      const newsList = news.filter(a => {
         return a['category'] === '국내';
       });
-      getFootball(newsList,category)
+      getFootball(newsList, category);
     },
   });
 }
@@ -173,10 +173,10 @@ function wFootball() {
     url: '/api/getnews',
     success: function (res) {
       const news = res.news;
-      const newsList = news.filter((a) => {
+      const newsList = news.filter(a => {
         return a['category'] === '해외';
       });
-      getFootball(newsList,category);
+      getFootball(newsList, category);
     },
   });
 }
@@ -190,11 +190,11 @@ function aFootball() {
     url: '/api/getnews',
     success: function (res) {
       const news = res.news;
-      const newsList = news.filter((a) => {
+      const newsList = news.filter(a => {
         return a['category'] === '해외' || a['category'] === '국내';
       });
 
-      getFootball(newsList,category);
+      getFootball(newsList, category);
     },
   });
 }
@@ -202,7 +202,7 @@ function aFootball() {
 // 좋아요 카테고리
 function lFootball(userId) {
   const category = '내가 좋아요 한 기사';
-  console.log(userId)
+  // console.log(userId);
   $('.news-box').empty();
   $.ajax({
     type: 'GET',
@@ -210,14 +210,14 @@ function lFootball(userId) {
     data: { userId: userId },
     success: function (res) {
       const news = res.news;
-      getFootball(news,category)
+      getFootball(news, category);
     },
   });
 }
 
 function getFootball(newsList, category) {
   // console.log(category);
-  newsList.map((item) => {
+  newsList.map(item => {
     newsId = item.newsId;
     userId = item.UserId;
     newsLikedCount = item.newsLikedCount;
@@ -235,7 +235,7 @@ function getFootball(newsList, category) {
                               <div class="news-card">
                                 <a href="/newsDetail.html?newsId=${newsId}"><img src="${img}" alt="news_image" onerror="this.src='http://placehold.it/300x300'" /></a>
                                 <h3><a href="/newsDetail.html?newsId=${newsId}">${title}</a></h3>
-                                <p>${createdAt.split("T")[0]}</p>
+                                <p>${createdAt.split('T')[0]}</p>
                                 <p><a href="/userInfo.html?userId=${userId}">${user}</a></p>
                                 <p>좋아요 : ${newsLikedCount}</p>
                               </div>
@@ -488,7 +488,6 @@ function getNewsDetail(goodsId, callback) {
   });
 }
 
-
 function getNewsDetailLiked(newsId, callback) {
   $.ajax({
     type: 'GET',
@@ -561,7 +560,7 @@ function btnReady() {
 }
 
 function clickUpdateBtn(newsId) {
-  location.href = 'http://localhost:3018/modify.html?newsId=' + newsId
+  location.href = 'http://localhost:3018/modify.html?newsId=' + newsId;
 }
 
 function clickDeleteBtn(newsId) {
@@ -584,7 +583,7 @@ function addComment(newsId) {
     return;
   }
 
-  const content = document.querySelector("#commentContent").value;
+  const content = document.querySelector('#commentContent').value;
   if (content) {
     $.ajax({
       type: 'POST',
@@ -592,7 +591,7 @@ function addComment(newsId) {
       data: { content: content },
       success: function (res) {
         getComments(newsId);
-        document.querySelector("#commentContent").value = "";
+        document.querySelector('#commentContent').value = '';
       },
       error: function (error) {
         console.log(error);
@@ -600,13 +599,13 @@ function addComment(newsId) {
       },
     });
   } else {
-    alert("내용을 입력해주세요");
+    alert('내용을 입력해주세요');
   }
 }
 
 // 댓글 수정 기능
 function editComment(newsId, commentId, beforeContent) {
-  const content = prompt("수정할 내용을 입력해주세요.", beforeContent);
+  const content = prompt('수정할 내용을 입력해주세요.', beforeContent);
   if (content) {
     $.ajax({
       type: 'PUT',
@@ -614,14 +613,14 @@ function editComment(newsId, commentId, beforeContent) {
       data: { content: content },
       success: function () {
         getComments(newsId);
-        document.querySelector("#commentContent").value = "";
+        document.querySelector('#commentContent').value = '';
       },
       error: function () {
         alert('댓글 수정에 실패했습니다.');
-      }
+      },
     });
   } else {
-    alert("내용을 입력해주세요");
+    alert('내용을 입력해주세요');
   }
 }
 
@@ -636,7 +635,7 @@ function deleteComment(newsId, commentId) {
       },
       error: function () {
         alert('댓글 삭제에 실패했습니다.');
-      }
+      },
     });
   }
 }
@@ -644,7 +643,7 @@ function deleteComment(newsId, commentId) {
 // 댓글 신고 기능
 function declarateComment(newsId, commentId) {
   if (loginUserId) {
-    const content = prompt("신고사유를 작성해주세요.");
+    const content = prompt('신고사유를 작성해주세요.');
     if (content) {
       $.ajax({
         type: 'POST',
@@ -656,13 +655,13 @@ function declarateComment(newsId, commentId) {
         },
         error: function () {
           alert('댓글 신고에 실패하였습니다.');
-        }
+        },
       });
     } else {
-      alert("내용을 입력해주세요");
+      alert('내용을 입력해주세요');
     }
   } else {
-    alert("로그인 후 이용 가능합니다.");
+    alert('로그인 후 이용 가능합니다.');
   }
 }
 
@@ -681,7 +680,7 @@ function getComments(newsId) {
         let commentElement = createCommentElement(newsId, comments[i]);
         commentsContainer.append(commentElement);
       }
-    }
+    },
   });
 }
 
@@ -690,19 +689,23 @@ function declarationProccess(newsId, commentId) {
     type: 'DELETE',
     url: `/api/news/comments/${commentId}/declaration`,
     success: function (response) {
-      if (response.check === "OK") getComments(newsId);
-    }
+      if (response.check === 'OK') getComments(newsId);
+    },
   });
 }
 
 function createCommentElement(newsId, comment) {
-  console.log("dd");
+  // console.log('dd');
   let commentElement = $('<div>').addClass('comment');
-  let contentElement = $('<span>').addClass('commentContent').text(": " + comment.content);
+  let contentElement = $('<span>')
+    .addClass('commentContent')
+    .text(': ' + comment.content);
   let actionsElement = $('<span>').addClass('actions');
 
   // 닉네임을 표시하는 요소 생성
-  let nicknameElement = $('<span>').addClass('commentNickname').text(comment.nickname);
+  let nicknameElement = $('<span>')
+    .addClass('commentNickname')
+    .text(comment.nickname);
   // 클릭 이벤트 핸들러 추가
   nicknameElement.on('click', function () {
     // 네비게이션 코드를 여기에 추가
@@ -734,20 +737,18 @@ function createCommentElement(newsId, comment) {
   return commentElement;
 }
 
-
-
 // 게시글 수정 기능
 function editPost(newsId) {
-  const title = document.querySelector('#title').value
-  const content = document.querySelector('#content').value
+  const title = document.querySelector('#title').value;
+  const content = document.querySelector('#content').value;
 
   const categoryRadio = document.getElementsByName('category');
   let category;
-  categoryRadio.forEach((node) => {
+  categoryRadio.forEach(node => {
     if (node.checked) {
       category = node.value;
     }
-  })
+  });
 
   // const content = prompt("수정할 내용을 입력해주세요.",beforeContent);
   if (title && content && category) {
@@ -760,12 +761,10 @@ function editPost(newsId) {
       },
       error: function () {
         alert('뉴스 수정에 실패했습니다.');
-      }
+      },
     });
-    location.href = "http://localhost:3018/newsDetail.html?newsId=" + newsId;
+    location.href = 'http://localhost:3018/newsDetail.html?newsId=' + newsId;
   } else {
-    alert("내용을 입력해주세요");
+    alert('내용을 입력해주세요');
   }
 }
-
-
